@@ -1,5 +1,3 @@
-# main.tf
-
 provider "aws" {
   region = "us-east-1"  # You can change this if needed
 }
@@ -54,4 +52,9 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 
 # Scaling Policy to scale up the Auto Scaling Group
 resource "aws_autoscaling_policy" "scale_up" {
-  name      
+  name                   = "scale_up_policy"   # Corrected the name attribute
+  scaling_adjustment      = 1
+  adjustment_type         = "ChangeInCapacity"
+  cooldown                = 300
+  autoscaling_group_name   = aws_autoscaling_group.example.name
+}
