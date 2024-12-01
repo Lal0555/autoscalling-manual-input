@@ -1,16 +1,19 @@
+# main.tf
+
 provider "aws" {
   region = "us-east-1"  # You can change this if needed
 }
+
 # Launch Template
 resource "aws_launch_template" "example" {
   name          = "example-launch-template"
   image_id      = var.ami_id
   instance_type = var.instance_type
-  security_group_names = [var.security_group_id]
 
   network_interfaces {
     associate_public_ip_address = true
     subnet_id                  = var.subnet_id
+    security_groups            = [var.security_group_id]  # Security group inside network interface
   }
 }
 
@@ -51,10 +54,4 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 
 # Scaling Policy to scale up the Auto Scaling Group
 resource "aws_autoscaling_policy" "scale_up" {
-  name                   = "scale-up"
-  scaling_adjustment     = 1
-  adjustment_type        = "ChangeInCapacity"
-  cooldown               = 300
-  autoscaling_group_name  = aws_autoscaling_group.example.name
-}
-
+  name      
