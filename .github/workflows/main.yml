@@ -1,0 +1,51 @@
+name: Deploy EC2 Auto Scaling with Terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      ami_id:
+        description: 'The AMI ID to use for the EC2 instance'
+        required: true
+        default: ''
+      instance_type:
+        description: 'The instance type for the EC2 instance'
+        required: true
+        default: ''
+      security_group_id:
+        description: 'The security group ID for the EC2 instance'
+        required: true
+        default: ''
+      subnet_id:
+        description: 'The subnet ID for the EC2 instance'
+        required: true
+        default: ''
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0  # Update as needed
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        run: |
+          terraform plan -var "ami_id=${{ github.event.inputs.ami_id }}" \
+                          -var "instance_type=${{ github.event.inputs.instance_type }}" \
+                          -var "security_group_id=${{ github.event.inputs.security_group_id }}" \
+                          -var "subnet_id=${{ github.event.inputs.subnet_id }}"
+
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve -var "ami_id=${{ github.event.inputs.ami_id }}" \
+                          -var "instance_type=${{ github.event.inputs.instance_type }}" \
+                          -var "security_group_id=${{ github.event.inputs.security_group_id }}" \
+                          -var "subnet_id=${{ github.event.inputs.subnet_id }}"
